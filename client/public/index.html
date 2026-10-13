@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#17233c" />
+    <meta name="description" content="Discover upcoming hackathons by date, location, format, and topic." />
+    <title>HackScout — Find your next hackathon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="HackScout home"><span class="brand-symbol"><i></i><i></i><i></i></span><span>hackscout<span class="brand-period">.</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#discover">Explore</a>
+        <a class="nav-link" href="#discover" data-quick-filter="Virtual">Online events</a>
+        <button class="nav-link saved-nav" id="saved-nav"><span class="heart-icon">♡</span> Saved <span class="saved-count" id="saved-count">0</span></button>
+      </nav>
+      <a class="submit-event" href="#list-event">List an event <span>↗</span></a>
+      <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+    </header>
+
+    <main>
+      <section class="hero" id="discover">
+        <div class="hero-decoration decoration-one"></div><div class="hero-decoration decoration-two"></div>
+        <div class="hero-content">
+          <div class="hero-kicker"><span class="kicker-spark">✳</span> FOR BUILDERS, DREAMERS & DOERS</div>
+          <h1>Your next big idea<br />starts <em>here.</em></h1>
+          <p class="hero-subtitle">Find hackathons that match your interests, your schedule, and the way you want to build.</p>
+          <form class="search-panel" id="search-form">
+            <label class="search-field keyword-field"><span class="field-icon">⌕</span><span class="field-copy"><small>WHAT ARE YOU INTO?</small><input id="keyword-input" type="search" placeholder="Try “AI”, climate, fintech..." /></span></label>
+            <span class="search-divider"></span>
+            <label class="search-field location-field"><span class="field-icon pin-icon">⌖</span><span class="field-copy"><small>WHERE?</small><input id="location-input" type="search" placeholder="City or online" /></span>
+              <button type="button" class="location-button" id="online-toggle" aria-label="Toggle online events">◎</button>
+            </label>
+            <button class="search-submit" type="submit">Find events <span>→</span></button>
+          </form>
+          <div class="hero-bottom"><span>Popular:</span><button class="popular-tag" data-topic="AI">AI & machine learning</button><button class="popular-tag" data-topic="Climate">Climate tech</button><button class="popular-tag" data-topic="Beginner">Beginner-friendly</button><button class="popular-tag" data-topic="Virtual">Online</button></div>
+        </div>
+        <div class="hero-side-note"><span class="side-note-line"></span><span>IDEAS DON'T WAIT.<br /><strong>NEITHER SHOULD YOU.</strong></span></div>
+      </section>
+
+      <section class="discovery-wrap">
+        <div class="preview-note"><span class="preview-note-icon">i</span><span><strong>Preview listings:</strong> examples shown are sample data, not real or verified events.</span></div>
+        <div class="section-heading">
+          <div><div class="eyebrow">YOUR NEXT BUILD STARTS HERE</div><h2>Find your kind of hackathon</h2><p>Big ideas, friendly competition, and people who get it.</p></div>
+          <a class="view-saved-link" href="#events" id="saved-link">♡ <span>View saved</span><span class="arrow">→</span></a>
+        </div>
+        <div class="category-row" aria-label="Filter by topic">
+          <button class="category-chip active" data-category="All"><span>✳</span> All events</button>
+          <button class="category-chip" data-category="AI"><span>⌘</span> AI & data</button>
+          <button class="category-chip" data-category="Climate"><span>♧</span> Climate</button>
+          <button class="category-chip" data-category="Health"><span>✚</span> Health</button>
+          <button class="category-chip" data-category="Social impact"><span>♡</span> Social impact</button>
+          <button class="category-chip" data-category="Web3"><span>◇</span> Web3</button>
+          <button class="category-chip" data-category="Beginner"><span>✦</span> Beginner-friendly</button>
+          <button class="category-chip more-categories" id="more-categories">More <span>⌄</span></button>
+        </div>
+
+        <section class="events-section" id="events">
+          <div class="events-toolbar">
+            <div><h3 id="results-title">Upcoming hackathons <span id="result-count"></span></h3><p id="results-description">Fresh opportunities to learn, create, and meet your people.</p></div>
+            <div class="toolbar-controls">
+              <button class="filter-button" id="filters-toggle" aria-expanded="false" aria-controls="filter-panel"><span>☷</span> Filters <span class="filter-count" id="filter-count"></span></button>
+              <label class="sort-control">Sort by <select id="sort-select"><option value="soonest">Soonest</option><option value="latest">Latest</option><option value="name">Name A–Z</option></select></label>
+            </div>
+          </div>
+          <div class="filter-panel" id="filter-panel">
+            <div class="filter-group"><div class="filter-group-title">Event details</div>
+              <label>Format<select id="format-filter"><option value="">Any format</option><option>In-person</option><option>Virtual</option><option>Hybrid</option></select></label>
+              <label>When<select id="when-filter"><option value="">Any time</option><option value="7">Next 7 days</option><option value="30">Next 30 days</option><option value="90">Next 3 months</option></select></label>
+              <label>Cost<select id="cost-filter"><option value="">Any cost</option><option>Free</option><option>Paid</option><option>Not confirmed</option></select></label>
+            </div>
+            <div class="filter-group"><div class="filter-group-title">Student eligibility</div>
+              <label>Student status<select id="student-filter"><option value="">Any</option><option value="required">Student status required</option><option value="not-required">Not required</option><option value="unknown">Needs confirmation</option></select></label>
+              <label>Undergraduates<select id="undergrad-filter"><option value="">Any</option><option value="yes">Eligible</option><option value="no">Not eligible</option><option value="unknown">Needs confirmation</option></select></label>
+              <label>Outside university<select id="outside-school-filter"><option value="">Any</option><option value="yes">Participation allowed</option><option value="no">Not allowed</option><option value="unknown">Needs confirmation</option></select></label>
+              <label>International students<select id="international-filter"><option value="">Any</option><option value="yes">Explicitly allowed</option><option value="no">Not allowed</option><option value="unknown">Needs confirmation</option></select></label>
+            </div>
+            <div class="filter-group"><div class="filter-group-title">Age & location</div>
+              <label>Age rules<select id="age-filter"><option value="">Any</option><option value="none">No age restriction stated</option><option value="restricted">Has age restriction</option><option value="unknown">Needs confirmation</option></select></label>
+              <label>My age<input id="my-age-filter" type="number" min="1" max="120" placeholder="Optional" /></label>
+              <label>Geographic eligibility<input id="geography-filter" type="search" placeholder="e.g. US, worldwide" /></label>
+              <label>Invitation<select id="invitation-filter"><option value="">Any</option><option value="open">Open registration</option><option value="invite">Invitation required</option><option value="unknown">Needs confirmation</option></select></label>
+            </div>
+            <div class="filter-group"><div class="filter-group-title">Team rules</div>
+              <label>My team size<select id="team-size-filter"><option value="">Any team size</option><option value="1">Solo (1)</option><option value="2">2 members</option><option value="3">3 members</option><option value="4">4 members</option><option value="5">5 members</option><option value="6">6 members</option></select></label>
+              <label>Participation<select id="participation-filter"><option value="">Solo or team</option><option value="solo">Solo participation allowed</option><option value="team">Team required</option></select></label>
+              <label>Team formation<select id="team-formation-filter"><option value="">Any team formation</option><option value="bring-team">Bring your own team</option><option value="organizer-match">Organizer team matching</option><option value="either">Either option</option><option value="unknown">Needs confirmation</option></select></label>
+              <label>Member registration<select id="members-register-filter"><option value="">Any registration rule</option><option value="yes">Every member must register</option><option value="no">Not required for every member</option><option value="unknown">Needs confirmation</option></select></label>
+            </div>
+            <div class="filter-panel-footer"><span>“Needs confirmation” means the organizer’s rules haven’t confirmed this detail.</span><button id="clear-filters" class="clear-filters">Clear all filters</button></div>
+          </div>
+          <div class="event-grid" id="event-grid"></div>
+          <div class="no-results" id="no-results" hidden><span>⌕</span><h3>No events found</h3><p>Try a different search or clear your filters to see more opportunities.</p><button id="reset-search">Clear search & filters</button></div>
+          <button class="load-more" id="load-more">Show more events <span>↓</span></button>
+        </section>
+      </section>
+
+      <section class="how-section">
+        <div class="how-inner"><div class="how-intro"><div class="eyebrow">MADE FOR THE MAKERS</div><h2>More than a weekend.<br /><em>A launchpad.</em></h2><p>Whether you’ve got a team and a pitch, or just curiosity and a laptop, there’s a room for you.</p><a href="#events" class="how-link">Explore all events <span>→</span></a></div>
+          <div class="how-steps"><article><span class="step-number">01</span><div class="step-icon violet-icon">⌕</div><h3>Find your fit</h3><p>Filter by what you love, where you are, and when you’re free.</p></article><article><span class="step-number">02</span><div class="step-icon lime-icon">♡</div><h3>Save the good ones</h3><p>Keep a shortlist and compare deadlines before they sneak up.</p></article><article><span class="step-number">03</span><div class="step-icon orange-icon">↗</div><h3>Go make something</h3><p>Meet your people, try something new, and ship that idea.</p></article></div>
+        </div>
+      </section>
+      <section class="submit-section" id="list-event"><div><div class="eyebrow">GOT AN EVENT COMING UP?</div><h2>Bring the builders together.</h2><p>Help more people find your hackathon.</p></div><button class="submit-button" id="suggest-event">Suggest an event <span>↗</span></button></section>
+    </main>
+
+    <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-symbol"><i></i><i></i><i></i></span><span>hackscout<span class="brand-period">.</span></span></a><span>Good ideas are better built together.</span><span>© 2026 HackScout <a href="#discover">Back to top ↑</a></span></footer>
+
+    <div class="modal-backdrop" id="event-modal" aria-hidden="true"><section class="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" id="modal-close" aria-label="Close">×</button><div id="modal-content"></div></section></div>
+    <script src="app.js"></script>
+  </body>
+</html>
