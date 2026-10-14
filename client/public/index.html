@@ -44,7 +44,7 @@
       </section>
 
       <section class="discovery-wrap">
-        <div class="preview-note"><span class="preview-note-icon">i</span><span><strong>Preview listings:</strong> examples shown are sample data, not real or verified events.</span></div>
+        <div class="preview-note" id="listing-notice" role="status"><span class="preview-note-icon">i</span><span>Connecting to live hackathon listings…</span></div>
         <div class="section-heading">
           <div><div class="eyebrow">YOUR NEXT BUILD STARTS HERE</div><h2>Find your kind of hackathon</h2><p>Big ideas, friendly competition, and people who get it.</p></div>
           <a class="view-saved-link" href="#events" id="saved-link">♡ <span>View saved</span><span class="arrow">→</span></a>
@@ -52,12 +52,12 @@
         <div class="category-row" aria-label="Filter by topic">
           <button class="category-chip active" data-category="All"><span>✳</span> All events</button>
           <button class="category-chip" data-category="AI"><span>⌘</span> AI & data</button>
-          <button class="category-chip" data-category="Climate"><span>♧</span> Climate</button>
-          <button class="category-chip" data-category="Health"><span>✚</span> Health</button>
+          <button class="category-chip" data-category="VR/AR"><span>◉</span> Virtual Reality (VR)</button>
+          <button class="category-chip" data-category="Climate"><span>♧</span> Climate & sustainability</button>
+          <button class="category-chip" data-category="Health"><span>✚</span> Health & biotech</button>
+          <button class="category-chip" data-category="Gaming"><span>▸</span> Gaming</button>
           <button class="category-chip" data-category="Social impact"><span>♡</span> Social impact</button>
-          <button class="category-chip" data-category="Web3"><span>◇</span> Web3</button>
-          <button class="category-chip" data-category="Beginner"><span>✦</span> Beginner-friendly</button>
-          <button class="category-chip more-categories" id="more-categories">More <span>⌄</span></button>
+          <button class="category-chip more-categories" id="more-categories">More topics <span>⌄</span></button>
         </div>
 
         <section class="events-section" id="events">
@@ -108,7 +108,7 @@
       <section class="submit-section" id="list-event"><div><div class="eyebrow">GOT AN EVENT COMING UP?</div><h2>Bring the builders together.</h2><p>Help more people find your hackathon.</p></div><button class="submit-button" id="suggest-event">Suggest an event <span>↗</span></button></section>
     </main>
 
-    <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-symbol"><i></i><i></i><i></i></span><span>hackscout<span class="brand-period">.</span></span></a><span>Good ideas are better built together.</span><span>© 2026 HackScout <a href="#discover">Back to top ↑</a></span></footer>
+    <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-symbol"><i></i><i></i><i></i></span><span>hackscout<span class="brand-period">.</span></span></a><span>Powered by Codyza</span><span>© 2026 HackScout <a href="#discover">Back to top ↑</a></span></footer>
 
     <div class="modal-backdrop" id="event-modal" aria-hidden="true"><section class="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" id="modal-close" aria-label="Close">×</button><div id="modal-content"></div></section></div>
     <script src="app.js"></script>

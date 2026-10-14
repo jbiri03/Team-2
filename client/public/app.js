@@ -1,15 +1,6 @@
-const events = [
-  { id: "impact-ai", title: "AI for Impact Hackathon", organizer: "Sample organizer · preview content", topic: "AI & data", category: ["AI", "Social impact"], date: "2026-10-17", location: "Austin, TX", format: "In-person", cost: "Free", mark: "AI", art: "art-ai", label: "BUILD FOR GOOD", beginner: true, student: "required", undergraduate: "yes", outsideUniversity: "yes", international: "unknown", age: { min: 18, max: null }, geography: "US only", invitation: "open", teamMin: 1, teamMax: 4, solo: "yes", teamFormation: "either", allMembersRegister: "yes", description: "A sample event listing for a weekend of building practical AI tools for community challenges. All details are illustrative." },
-  { id: "climate-sprint", title: "Climate Tech Build Sprint", organizer: "Sample organizer · preview content", topic: "Climate", category: ["Climate"], date: "2026-10-24", location: "Online", format: "Virtual", cost: "Free", mark: "↗", art: "art-climate", label: "BUILD A GREENER FUTURE", beginner: true, student: "not-required", undergraduate: "yes", outsideUniversity: "yes", international: "yes", age: { min: null, max: null }, geography: "Worldwide", invitation: "open", teamMin: 1, teamMax: 5, solo: "yes", teamFormation: "either", allMembersRegister: "no", description: "A sample virtual sprint focused on ideas for climate resilience, energy, and sustainability. All details are illustrative." },
-  { id: "civic-makers", title: "Civic Makers Weekend", organizer: "Sample organizer · preview content", topic: "Social impact", category: ["Social impact"], date: "2026-11-06", location: "Chicago, IL", format: "Hybrid", cost: "Not confirmed", mark: "C", art: "art-civic", label: "MAKE AN IMPACT", beginner: true, student: "required", undergraduate: "yes", outsideUniversity: "no", international: "unknown", age: { min: 18, max: null }, geography: "Illinois, US", invitation: "unknown", teamMin: 2, teamMax: 4, solo: "no", teamFormation: "bring-team", allMembersRegister: "yes", description: "A sample civic technology weekend bringing builders together to prototype tools for local communities. All details are illustrative." },
-  { id: "open-source", title: "Open Source Launchpad", organizer: "Sample organizer · preview content", topic: "Web development", category: ["Web3"], date: "2026-11-14", location: "Online", format: "Virtual", cost: "Free", mark: "</>", art: "art-dev", label: "SHIP SOMETHING OPEN", beginner: true, student: "not-required", undergraduate: "yes", outsideUniversity: "yes", international: "yes", age: { min: null, max: null }, geography: "Worldwide", invitation: "open", teamMin: 1, teamMax: 5, solo: "yes", teamFormation: "organizer-match", allMembersRegister: "yes", description: "A sample event for first-time and experienced contributors to build in the open. All details are illustrative." },
-  { id: "health-hacks", title: "Health Futures Hackathon", organizer: "Sample organizer · preview content", topic: "Health", category: ["Health", "AI"], date: "2026-11-21", location: "Boston, MA", format: "In-person", cost: "Paid", mark: "+", art: "art-health", label: "REIMAGINE WELLBEING", beginner: false, student: "required", undergraduate: "unknown", outsideUniversity: "yes", international: "unknown", age: { min: 18, max: 30 }, geography: "US only", invitation: "invite", teamMin: 2, teamMax: 4, solo: "no", teamFormation: "bring-team", allMembersRegister: "unknown", description: "A sample health innovation event focused on technology for better care and wellbeing. All details are illustrative." },
-  { id: "data-day", title: "Data for Everyone Challenge", organizer: "Sample organizer · preview content", topic: "AI & data", category: ["AI", "Social impact"], date: "2026-12-05", location: "Online", format: "Virtual", cost: "Free", mark: "D", art: "art-web", label: "TURN DATA INTO IDEAS", beginner: true, student: "not-required", undergraduate: "yes", outsideUniversity: "yes", international: "yes", age: { min: 16, max: null }, geography: "Worldwide", invitation: "open", teamMin: 1, teamMax: 4, solo: "yes", teamFormation: "either", allMembersRegister: "yes", description: "A sample online data challenge exploring accessible, responsible uses of data. All details are illustrative." },
-  { id: "web3-lab", title: "Web3 Open Build", organizer: "Sample organizer · preview content", topic: "Web3", category: ["Web3"], date: "2026-12-12", location: "New York, NY", format: "In-person", cost: "Not confirmed", mark: "◇", art: "art-web", label: "BUILD THE NEXT WEB", beginner: false, student: "unknown", undergraduate: "unknown", outsideUniversity: "unknown", international: "unknown", age: null, geography: "Needs confirmation", invitation: "unknown", teamMin: null, teamMax: null, solo: "unknown", teamFormation: "unknown", allMembersRegister: "unknown", description: "A sample gathering to experiment with decentralized applications and open protocols. All details are illustrative." },
-  { id: "green-city", title: "Greener Cities Hack Day", organizer: "Sample organizer · preview content", topic: "Climate", category: ["Climate", "Social impact"], date: "2027-01-09", location: "Online", format: "Virtual", cost: "Free", mark: "G", art: "art-climate", label: "IDEAS FOR BETTER CITIES", beginner: true, student: "not-required", undergraduate: "yes", outsideUniversity: "yes", international: "unknown", age: { min: null, max: null }, geography: "US and Canada", invitation: "open", teamMin: 1, teamMax: 6, solo: "yes", teamFormation: "either", allMembersRegister: "yes", description: "A sample one-day event for ideas that can make cities more sustainable and livable. All details are illustrative." },
-  { id: "student-build", title: "First Build Student Jam", organizer: "Sample organizer · preview content", topic: "Beginner-friendly", category: ["AI", "Health"], date: "2027-01-23", location: "Seattle, WA", format: "Hybrid", cost: "Free", mark: "✦", art: "art-ai", label: "NO EXPERIENCE NEEDED", beginner: true, student: "required", undergraduate: "yes", outsideUniversity: "yes", international: "yes", age: { min: 16, max: 25 }, geography: "US only", invitation: "open", teamMin: 1, teamMax: 4, solo: "yes", teamFormation: "organizer-match", allMembersRegister: "yes", description: "A sample beginner-friendly event designed for curious students and first-time hackers. All details are illustrative." }
-];
-
+let events = [];
+let listingsLoading = true;
+let listingsError = false;
 const saved = new Set(JSON.parse(localStorage.getItem("hackscout-saved") || "[]"));
 let activeCategory = "All";
 let savedOnly = false;
@@ -21,8 +12,139 @@ const $$ = (selector) => document.querySelectorAll(selector);
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 }
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
 function formatDate(iso, options = { month: "short", day: "numeric" }) {
+  if (!iso) return "Date TBD";
   return new Date(`${iso}T12:00:00`).toLocaleDateString("en-US", options);
+}
+function dateOnly(value) {
+  return value ? String(value).slice(0, 10) : "";
+}
+function classifyEligibility(value, affirmative, negative) {
+  if (negative.test(value || "")) return "no";
+  if (affirmative.test(value || "")) return "yes";
+  return "unknown";
+}
+function mapHackathon(row) {
+  const tracks = row.technical_tracks || "";
+  const categorySource = [
+    row.event_name,
+    tracks,
+    row.ai_policy,
+    row.prizes,
+    row.sponsor_recruiting_benefits,
+    row.application_requirements
+  ].filter(Boolean).join(" ");
+  const categoryRules = [
+    ["AI", /\b(ai|artificial intelligence|machine learning|data science)\b/i],
+    ["VR/AR", /\b(vr|virtual reality|augmented reality|mixed reality|extended reality|xr)\b/i],
+    ["Climate", /\b(climate|sustainability|clean energy|environment)\b/i],
+    ["Health", /\b(health|medical|wellness|biotech)\b/i],
+    ["Gaming", /\b(gaming|video game|game development|game design|interactive game)\b/i],
+    ["Social impact", /\b(social impact|civic|community|accessibility)\b/i],
+    ["Web3", /\b(web3|blockchain|crypto|decentralized)\b/i],
+    ["Cybersecurity", /\b(cybersecurity|security|privacy)\b/i],
+    ["Education", /\b(education|learning|edtech)\b/i],
+    ["Fintech", /\b(fintech|finance|financial|payments)\b/i],
+    ["Robotics & hardware", /\b(robotics|robot|hardware|embedded systems|iot|internet of things)\b/i]
+  ];
+  const category = categoryRules.filter(([, pattern]) => pattern.test(categorySource)).map(([name]) => name);
+  const date = row.event_start ? String(row.event_start).slice(0, 10) : null;
+  const format = ({ in_person: "In-person", virtual: "Virtual", hybrid: "Hybrid" })[row.format] || "Not confirmed";
+  const location = row.format === "virtual" ? "Online" :
+    [row.venue, row.city, row.state_region, row.country].filter(Boolean).join(", ") || "Location not confirmed";
+  const fee = row.registration_fee || "";
+  const cost = /\bfree|no fee|no cost\b/i.test(fee) ? "Free" :
+    /\b(paid|fee required|registration fee|usd|\$)\b/i.test(fee) ? "Paid" : "Not confirmed";
+  const teamSize = row.team_size || "";
+  const teamRange = teamSize.match(/(\d+)\s*(?:-|–|to)\s*(\d+)/i);
+  const soloTeam = /\bsolo\b/i.test(teamSize);
+  const rulesFaqUrl = row.rules_faq_url || "";
+  const studentEligibility = classifyEligibility(
+    row.student_eligibility,
+    /\b(required|must be|students only|only students)\b/i,
+    /\b(not required|no student requirement|non[- ]students|open to all|anyone may)\b/i
+  );
+  const student = studentEligibility === "yes" ? "required" :
+    studentEligibility === "no" ? "not-required" : "unknown";
+  const outsideUniversity = classifyEligibility(
+    row.outside_school_eligibility,
+    /\b(allowed|eligible|open to|accepted)\b/i,
+    /\b(not allowed|ineligible|not eligible|university students only|school students only)\b/i
+  );
+  const international = classifyEligibility(
+    row.international_student_wording,
+    /\b(allowed|eligible|open to|accepted)\b/i,
+    /\b(not allowed|ineligible|not eligible|cannot participate|not accepted)\b/i
+  );
+  const artByCategory = ["art-ai", "art-web", "art-climate", "art-health", "art-web", "art-civic", "art-web", "art-web", "art-web", "art-web", "art-web"];
+  const officialWebsite = row.official_website || "";
+  const registrationLink = row.registration_link || "";
+  return {
+    id: row.id,
+    title: row.event_name,
+    organizer: row.organizer || "Organizer not listed",
+    topic: tracks.split(/[,;\n]/).map((part) => part.trim()).find(Boolean) || "Hackathon",
+    category,
+    date,
+    location,
+    format,
+    cost,
+    mark: (category[0] || "H").slice(0, 3).toUpperCase(),
+    art: artByCategory[categoryRules.findIndex(([, pattern]) => pattern.test(categorySource))] || "art-web",
+    label: row.status || "Hackathon listing",
+    beginner: /\b(beginner|first[- ]time|new to hackathons)\b/i.test(`${tracks} ${row.application_requirements || ""}`),
+    student,
+    undergraduate: "unknown",
+    outsideUniversity: outsideUniversity === "yes" || outsideUniversity === "no" ? outsideUniversity : "unknown",
+    international: international === "yes" || international === "no" ? international : "unknown",
+    age: null,
+    geography: [row.country, row.outside_school_eligibility, row.international_student_wording].filter(Boolean).join(" ") || "Needs confirmation",
+    invitation: "unknown",
+    teamMin: soloTeam ? 1 : teamRange ? Number(teamRange[1]) : null,
+    teamMax: soloTeam ? 1 : teamRange ? Number(teamRange[2]) : null,
+    solo: soloTeam ? "yes" : teamRange && Number(teamRange[1]) > 1 ? "no" : "unknown",
+    teamFormation: "unknown",
+    allMembersRegister: "unknown",
+    description: tracks || row.application_requirements || "See the official event website for details.",
+    officialWebsite,
+    registrationLink,
+    rulesFaqUrl,
+    status: row.status,
+    confidence: row.confidence,
+    details: [
+      ["Event dates", row.event_start && row.event_end ? `${dateOnly(row.event_start)} to ${dateOnly(row.event_end)}` : dateOnly(row.event_start || row.event_end)],
+      ["Registration deadline", dateOnly(row.registration_deadline)],
+      ["Registration status", row.registration_status],
+      ["Last verified", dateOnly(row.last_verified_date)],
+      ["Student eligibility", row.student_eligibility],
+      ["Outside-school eligibility", row.outside_school_eligibility],
+      ["International student wording", row.international_student_wording],
+      ["Age rules", row.age_rules],
+      ["Team size", row.team_size],
+      ["Solo/team rules", row.solo_team_formation_rules],
+      ["Registration fee", row.registration_fee],
+      ["Travel support", row.travel_support],
+      ["Lodging", row.lodging],
+      ["Meals", row.meals],
+      ["Reimbursement conditions", row.reimbursement_conditions],
+      ["Technical tracks", row.technical_tracks],
+      ["AI policy", row.ai_policy],
+      ["Pre-existing code policy", row.pre_existing_code_policy],
+      ["IP terms", row.ip_terms],
+      ["Judging criteria", row.judging_criteria],
+      ["Prizes", row.prizes],
+      ["Sponsor/recruiting benefits", row.sponsor_recruiting_benefits],
+      ["Application requirements", row.application_requirements]
+    ].filter(([, value]) => value)
+  };
 }
 function updateSavedCount() {
   $("#saved-count").textContent = saved.size;
@@ -70,9 +192,10 @@ function getFilteredEvents() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const result = events.filter((event) => {
-    const haystack = `${event.title} ${event.organizer} ${event.topic} ${event.location} ${event.format} ${event.cost} ${event.category.join(" ")}`.toLowerCase();
-    const eventDate = new Date(`${event.date}T00:00:00`);
-    const daysUntil = (eventDate - today) / 86400000;
+    const searchableDetails = event.details.map(([, value]) => value).join(" ");
+    const haystack = `${event.title} ${event.organizer} ${event.topic} ${event.location} ${event.format} ${event.cost} ${event.category.join(" ")} ${searchableDetails}`.toLowerCase();
+    const eventDate = event.date ? new Date(`${event.date}T00:00:00`) : null;
+    const daysUntil = eventDate ? (eventDate - today) / 86400000 : Infinity;
     const categoryMatches = activeCategory === "All" ||
       (activeCategory === "Beginner" ? event.beginner : event.category.some((category) => category.toLowerCase() === activeCategory.toLowerCase()));
     const locationMatches = !location || event.location.toLowerCase().includes(location) ||
@@ -83,7 +206,11 @@ function getFilteredEvents() {
       eligibilityMatches(event);
   });
   const sort = $("#sort-select").value;
-  result.sort((a, b) => sort === "name" ? a.title.localeCompare(b.title) : sort === "latest" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+  result.sort((a, b) => {
+    if (sort === "name") return a.title.localeCompare(b.title);
+    if (!a.date || !b.date) return a.date ? -1 : b.date ? 1 : 0;
+    return sort === "latest" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date);
+  });
   return result;
 }
 function renderEvents() {
@@ -97,15 +224,15 @@ function renderEvents() {
         <button class="save-button ${saved.has(event.id) ? "saved" : ""}" data-save="${event.id}" aria-label="${saved.has(event.id) ? "Remove saved event" : "Save event"}">${saved.has(event.id) ? "♥" : "♡"}</button>
       </div>
       <div class="card-body">
-        <div class="card-tags"><span class="event-topic">${escapeHtml(event.topic)}</span><span class="sample-tag">SAMPLE</span></div>
+        <div class="card-tags"><span class="event-topic">${escapeHtml(event.topic)}</span><span class="sample-tag">${escapeHtml(event.status || "Listing")}</span></div>
         <h4 class="card-title">${escapeHtml(event.title)}</h4><div class="card-organizer">${escapeHtml(event.organizer)}</div><div class="eligibility-quick">${event.student === "required" ? "Student status required" : event.student === "not-required" ? "Student status not required" : "Student status: needs confirmation"}</div>
-        <div class="card-meta"><span class="meta-item"><span>▦</span>${formatDate(event.date, { month: "short", day: "numeric" })}</span><span class="meta-item"><span>⌖</span>${escapeHtml(event.location)}</span></div>
+        <div class="card-meta"><span class="meta-item"><span>▦</span>${event.date ? formatDate(event.date, { month: "short", day: "numeric" }) : "Date TBD"}</span><span class="meta-item"><span>⌖</span>${escapeHtml(event.location)}</span></div>
         <div class="card-bottom"><span class="format-badge">${escapeHtml(event.format)} · ${escapeHtml(event.cost)}</span><button class="card-detail" data-details="${event.id}">Event details <span>→</span></button></div>
       </div>
     </article>`).join("");
-  $("#no-results").hidden = filtered.length > 0;
-  grid.hidden = filtered.length === 0;
-  $("#load-more").hidden = filtered.length <= visibleCount;
+  $("#no-results").hidden = listingsLoading || listingsError || filtered.length > 0;
+  grid.hidden = listingsLoading || listingsError || filtered.length === 0;
+  $("#load-more").hidden = listingsLoading || listingsError || filtered.length <= visibleCount;
   $("#results-title").innerHTML = `${savedOnly ? "Saved events" : "Upcoming hackathons"} <span id="result-count">(${filtered.length})</span>`;
   $("#results-description").textContent = savedOnly ? "Your saved events, all in one place." : "Fresh opportunities to learn, create, and meet your people.";
   const filterIds = ["format-filter", "when-filter", "cost-filter", "student-filter", "undergrad-filter", "outside-school-filter", "international-filter", "age-filter", "my-age-filter", "geography-filter", "invitation-filter", "team-size-filter", "participation-filter", "team-formation-filter", "members-register-filter"];
@@ -123,28 +250,21 @@ function toggleSaved(id) {
 function showEventDetails(id) {
   const event = events.find((item) => item.id === id);
   if (!event) return;
+  const registrationUrl = safeExternalUrl(event.registrationLink) || safeExternalUrl(event.officialWebsite);
+  const officialUrl = safeExternalUrl(event.officialWebsite);
+  const rulesUrl = safeExternalUrl(event.rulesFaqUrl);
   $("#modal-content").innerHTML = `
     <div class="modal-art ${event.art}"><span class="art-stamp">${escapeHtml(event.mark)}</span><span class="art-label">${escapeHtml(event.label)}</span></div>
-    <div class="card-tags"><span class="event-topic">${escapeHtml(event.topic)}</span><span class="sample-tag">SAMPLE LISTING</span></div>
+    <div class="card-tags"><span class="event-topic">${escapeHtml(event.topic)}</span><span class="sample-tag">${escapeHtml(event.status || "Listing")}</span></div>
     <h2 class="modal-title" id="modal-title">${escapeHtml(event.title)}</h2><p class="modal-organizer">${escapeHtml(event.organizer)}</p>
-    <div class="modal-facts"><div class="modal-fact"><small>Event date</small><strong>${formatDate(event.date, { month: "long", day: "numeric", year: "numeric" })}</strong></div><div class="modal-fact"><small>Location</small><strong>${escapeHtml(event.location)}</strong></div><div class="modal-fact"><small>Format</small><strong>${escapeHtml(event.format)}</strong></div><div class="modal-fact"><small>Registration cost</small><strong>${escapeHtml(event.cost)}</strong></div></div>
+    <div class="modal-facts"><div class="modal-fact"><small>Event date</small><strong>${event.date ? formatDate(event.date, { month: "long", day: "numeric", year: "numeric" }) : "Date not confirmed"}</strong></div><div class="modal-fact"><small>Location</small><strong>${escapeHtml(event.location)}</strong></div><div class="modal-fact"><small>Format</small><strong>${escapeHtml(event.format)}</strong></div><div class="modal-fact"><small>Registration cost</small><strong>${escapeHtml(event.cost)}</strong></div><div class="modal-fact"><small>Confidence</small><strong>${escapeHtml(event.confidence || "Not provided")}</strong></div></div>
     <p class="modal-description">${escapeHtml(event.description)}</p>
-    <h3 class="eligibility-heading">Eligibility & team rules <span>MOCK PREVIEW DATA</span></h3>
-    <div class="eligibility-details">
-      <div><small>Student status</small><strong>${event.student === "required" ? "Required" : event.student === "not-required" ? "Not required" : "Needs confirmation"}</strong></div>
-      <div><small>Undergraduates</small><strong>${event.undergraduate === "yes" ? "Eligible" : event.undergraduate === "no" ? "Not eligible" : "Needs confirmation"}</strong></div>
-      <div><small>Outside universities</small><strong>${event.outsideUniversity === "yes" ? "Participation allowed" : event.outsideUniversity === "no" ? "Not allowed" : "Needs confirmation"}</strong></div>
-      <div><small>International students</small><strong>${event.international === "yes" ? "Explicitly allowed" : event.international === "no" ? "Not allowed" : "Needs confirmation"}</strong></div>
-      <div><small>Age rule</small><strong>${event.age === null ? "Needs confirmation" : event.age.min === null && event.age.max === null ? "No age restriction stated" : `${event.age.min === null ? "" : `Minimum ${event.age.min}`}${event.age.min !== null && event.age.max !== null ? " · " : ""}${event.age.max === null ? "" : `Maximum ${event.age.max}`}`}</strong></div>
-      <div><small>Geography</small><strong>${escapeHtml(event.geography)}</strong></div>
-      <div><small>Invitation</small><strong>${event.invitation === "open" ? "Open registration" : event.invitation === "invite" ? "Invitation required" : "Needs confirmation"}</strong></div>
-      <div><small>Team size</small><strong>${event.teamMin === null || event.teamMax === null ? "Needs confirmation" : event.teamMin === event.teamMax ? `${event.teamMin} member${event.teamMin === 1 ? "" : "s"}` : `${event.teamMin}–${event.teamMax} members`}</strong></div>
-      <div><small>Solo participation</small><strong>${event.solo === "yes" ? "Allowed" : event.solo === "no" ? "Team required" : "Needs confirmation"}</strong></div>
-      <div><small>Team formation</small><strong>${event.teamFormation === "bring-team" ? "Bring your own team" : event.teamFormation === "organizer-match" ? "Organizer team matching" : event.teamFormation === "either" ? "Bring a team or get matched" : "Needs confirmation"}</strong></div>
-      <div><small>Every member registers</small><strong>${event.allMembersRegister === "yes" ? "Yes" : event.allMembersRegister === "no" ? "No" : "Needs confirmation"}</strong></div>
-    </div>
-    <div class="modal-disclaimer">Every eligibility value above is mock preview data, not a claim about a real event. Always verify the official rules before applying.</div>
-    <div class="modal-actions"><button class="modal-save ${saved.has(event.id) ? "saved" : ""}" id="modal-save">${saved.has(event.id) ? "♥ Saved" : "♡ Save event"}</button><button class="modal-apply" disabled title="A verified registration link is not available in this preview">Registration link unavailable</button></div>`;
+    <h3 class="eligibility-heading">Event details <span>${escapeHtml(event.status || "Status not provided")}</span></h3>
+    <div class="eligibility-details">${event.details.map(([label, value]) => `<div><small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong></div>`).join("")}</div>
+    ${officialUrl ? `<p class="modal-description"><a href="${escapeHtml(officialUrl)}" target="_blank" rel="noopener noreferrer">Official event website</a></p>` : ""}
+    ${rulesUrl ? `<p class="modal-description"><a href="${escapeHtml(rulesUrl)}" target="_blank" rel="noopener noreferrer">Rules and FAQ</a></p>` : ""}
+    <div class="modal-disclaimer">Details are provided by the event research database. Confirm eligibility and deadlines with the organizer before applying.</div>
+    <div class="modal-actions"><button class="modal-save ${saved.has(event.id) ? "saved" : ""}" id="modal-save">${saved.has(event.id) ? "Saved" : "Save event"}</button>${registrationUrl ? `<a class="modal-apply" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Visit event & register</a>` : `<button class="modal-apply" disabled title="No event link is available">Event link unavailable</button>`}</div>`;
   $("#event-modal").classList.add("open");
   $("#event-modal").setAttribute("aria-hidden", "false");
   $("#modal-save").addEventListener("click", () => {
@@ -166,6 +286,23 @@ function clearFilters() {
   activeCategory = "All";
   savedOnly = false;
   $$(".category-chip").forEach((chip) => chip.classList.toggle("active", chip.dataset.category === "All"));
+  renderEvents();
+}
+async function loadHackathons() {
+  try {
+    const response = await fetch("/api/hackathons");
+    if (!response.ok) throw new Error(`Listings API returned HTTP ${response.status}`);
+    const rows = await response.json();
+    if (!Array.isArray(rows)) throw new Error("Listings API response was not a list");
+    events = rows.map(mapHackathon);
+    listingsLoading = false;
+    $("#listing-notice").textContent = `Showing ${events.length} live listings from the team database. Confirm event details with organizers.`;
+  } catch (error) {
+    console.error("Could not load hackathon listings:", error);
+    listingsLoading = false;
+    listingsError = true;
+    $("#listing-notice").textContent = "Could not connect to the listings database. Start the API and check its PostgreSQL connection settings.";
+  }
   renderEvents();
 }
 function setTopic(topic) {
@@ -231,22 +368,29 @@ $("#saved-link").addEventListener("click", (event) => {
 });
 $("#more-categories").addEventListener("click", () => {
   if (!showMoreCategories) {
-    const extraCategories = [["Cybersecurity", "⌑"], ["Education", "✎"], ["Fintech", "$"]];
+    const extraCategories = [
+      ["Web3", "◇"],
+      ["Cybersecurity", "⌑"],
+      ["Education", "✎"],
+      ["Fintech", "$"],
+      ["Robotics & hardware", "⚙"],
+      ["Beginner", "✦"]
+    ];
     const more = $("#more-categories");
     extraCategories.forEach(([name, icon]) => {
       const button = document.createElement("button");
       button.className = "category-chip";
       button.dataset.category = name;
-      button.innerHTML = `<span>${icon}</span> ${name}`;
+      button.innerHTML = `<span>${icon}</span> ${name === "Beginner" ? "Beginner-friendly" : name}`;
       button.addEventListener("click", () => setTopic(name));
       more.before(button);
     });
-    more.innerHTML = "Less <span>⌃</span>";
+    more.innerHTML = "Fewer topics <span>⌃</span>";
   } else {
     $$(".category-chip").forEach((chip) => {
-      if (["Cybersecurity", "Education", "Fintech"].includes(chip.dataset.category)) chip.remove();
+      if (["Web3", "Cybersecurity", "Education", "Fintech", "Robotics & hardware", "Beginner"].includes(chip.dataset.category)) chip.remove();
     });
-    $("#more-categories").innerHTML = "More <span>⌄</span>";
+    $("#more-categories").innerHTML = "More topics <span>⌄</span>";
   }
   showMoreCategories = !showMoreCategories;
 });
@@ -266,3 +410,4 @@ $("#suggest-event").addEventListener("click", () => {
 });
 
 renderEvents();
+loadHackathons();
