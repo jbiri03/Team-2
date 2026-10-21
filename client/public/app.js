@@ -189,6 +189,7 @@ function getFilteredEvents() {
   const format = $("#format-filter").value;
   const cost = $("#cost-filter").value;
   const withinDays = Number($("#when-filter").value);
+  const includeClosed = $("#include-closed").checked;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const result = events.filter((event) => {
@@ -200,7 +201,8 @@ function getFilteredEvents() {
       (activeCategory === "Beginner" ? event.beginner : event.category.some((category) => category.toLowerCase() === activeCategory.toLowerCase()));
     const locationMatches = !location || event.location.toLowerCase().includes(location) ||
       (["online", "virtual", "remote"].some((word) => location.includes(word)) && event.format === "Virtual");
-    return haystack.includes(keyword) && locationMatches && categoryMatches &&
+    return (includeClosed || event.status !== "Closed/Expired") &&
+      haystack.includes(keyword) && locationMatches && categoryMatches &&
       (!format || event.format === format) && (!cost || event.cost === cost) &&
       (!withinDays || (daysUntil >= 0 && daysUntil <= withinDays)) && (!savedOnly || saved.has(event.id)) &&
       eligibilityMatches(event);
@@ -233,8 +235,12 @@ function renderEvents() {
   $("#no-results").hidden = listingsLoading || listingsError || filtered.length > 0;
   grid.hidden = listingsLoading || listingsError || filtered.length === 0;
   $("#load-more").hidden = listingsLoading || listingsError || filtered.length <= visibleCount;
-  $("#results-title").innerHTML = `${savedOnly ? "Saved events" : "Upcoming hackathons"} <span id="result-count">(${filtered.length})</span>`;
-  $("#results-description").textContent = savedOnly ? "Your saved events, all in one place." : "Fresh opportunities to learn, create, and meet your people.";
+  $("#results-title").innerHTML = `${savedOnly ? "Saved events" : "Hackathon listings"} <span id="result-count">(${filtered.length})</span>`;
+  $("#results-description").textContent = savedOnly
+    ? "Your saved events, all in one place."
+    : "Browse current listings; include closed events to see archived opportunities.";
+  const closedCount = events.filter((event) => event.status === "Closed/Expired").length;
+  $("#closed-count").textContent = closedCount ? `(${closedCount})` : "";
   const filterIds = ["format-filter", "when-filter", "cost-filter", "student-filter", "undergrad-filter", "outside-school-filter", "international-filter", "age-filter", "my-age-filter", "geography-filter", "invitation-filter", "team-size-filter", "participation-filter", "team-formation-filter", "members-register-filter"];
   const activeCount = filterIds.reduce((total, id) => total + Number(Boolean($(`#${id}`).value)), 0);
   $("#filter-count").textContent = activeCount ? `(${activeCount})` : "";
@@ -282,6 +288,7 @@ function clearFilters() {
   $("#format-filter").value = "";
   $("#when-filter").value = "";
   $("#cost-filter").value = "";
+  $("#include-closed").checked = false;
   ["student-filter", "undergrad-filter", "outside-school-filter", "international-filter", "age-filter", "my-age-filter", "geography-filter", "invitation-filter", "team-size-filter", "participation-filter", "team-formation-filter", "members-register-filter"].forEach((id) => { $(`#${id}`).value = ""; });
   activeCategory = "All";
   savedOnly = false;
@@ -327,6 +334,10 @@ $("#keyword-input").addEventListener("input", () => { savedOnly = false; visible
 $("#location-input").addEventListener("input", () => { savedOnly = false; visibleCount = 6; renderEvents(); });
 $("#online-toggle").addEventListener("click", () => { $("#location-input").value = "Online"; savedOnly = false; renderEvents(); });
 $("#sort-select").addEventListener("change", renderEvents);
+$("#include-closed").addEventListener("change", () => {
+  visibleCount = 6;
+  renderEvents();
+});
 ["format-filter", "when-filter", "cost-filter", "student-filter", "undergrad-filter", "outside-school-filter", "international-filter", "age-filter", "my-age-filter", "geography-filter", "invitation-filter", "team-size-filter", "participation-filter", "team-formation-filter", "members-register-filter"].forEach((id) => {
   const control = $(`#${id}`);
   control.addEventListener(control.tagName === "INPUT" ? "input" : "change", renderEvents);
@@ -337,7 +348,7 @@ $("#filters-toggle").addEventListener("click", () => {
 });
 $("#clear-filters").addEventListener("click", clearFilters);
 $("#reset-search").addEventListener("click", clearFilters);
-$("#load-more").addEventListener("click", () => { visibleCount += 3; renderEvents(); });
+$("#load-more").addEventListener("click", () => { visibleCount = getFilteredEvents().length; renderEvents(); });
 $$(".category-chip").forEach((button) => button.addEventListener("click", () => {
   activeCategory = button.dataset.category;
   savedOnly = false;

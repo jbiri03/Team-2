@@ -65,6 +65,7 @@
             <div><h3 id="results-title">Upcoming hackathons <span id="result-count"></span></h3><p id="results-description">Fresh opportunities to learn, create, and meet your people.</p></div>
             <div class="toolbar-controls">
               <button class="filter-button" id="filters-toggle" aria-expanded="false" aria-controls="filter-panel"><span>☷</span> Filters <span class="filter-count" id="filter-count"></span></button>
+              <label class="sort-control"><input id="include-closed" type="checkbox" /> Include closed <span id="closed-count"></span></label>
               <label class="sort-control">Sort by <select id="sort-select"><option value="soonest">Soonest</option><option value="latest">Latest</option><option value="name">Name A–Z</option></select></label>
             </div>
           </div>
@@ -96,7 +97,7 @@
           </div>
           <div class="event-grid" id="event-grid"></div>
           <div class="no-results" id="no-results" hidden><span>⌕</span><h3>No events found</h3><p>Try a different search or clear your filters to see more opportunities.</p><button id="reset-search">Clear search & filters</button></div>
-          <button class="load-more" id="load-more">Show more events <span>↓</span></button>
+          <button class="load-more" id="load-more">Show all events <span>↓</span></button>
         </section>
       </section>
 
