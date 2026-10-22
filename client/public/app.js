@@ -43,19 +43,23 @@ function mapHackathon(row) {
     row.application_requirements
   ].filter(Boolean).join(" ");
   const categoryRules = [
-    ["AI", /\b(ai|artificial intelligence|machine learning|data science)\b/i],
-    ["VR/AR", /\b(vr|virtual reality|augmented reality|mixed reality|extended reality|xr)\b/i],
-    ["Climate", /\b(climate|sustainability|clean energy|environment)\b/i],
-    ["Health", /\b(health|medical|wellness|biotech)\b/i],
-    ["Gaming", /\b(gaming|video game|game development|game design|interactive game)\b/i],
-    ["Social impact", /\b(social impact|civic|community|accessibility)\b/i],
-    ["Web3", /\b(web3|blockchain|crypto|decentralized)\b/i],
-    ["Cybersecurity", /\b(cybersecurity|security|privacy)\b/i],
-    ["Education", /\b(education|learning|edtech)\b/i],
-    ["Fintech", /\b(fintech|finance|financial|payments)\b/i],
-    ["Robotics & hardware", /\b(robotics|robot|hardware|embedded systems|iot|internet of things)\b/i]
+    { name: "AI", pattern: /\b(ai|artificial intelligence|machine learning|data science|data analytics|data visualization|predictive analytics|natural language processing|computer vision)\b/i, art: "art-ai" },
+    { name: "VR/AR", pattern: /\b(vr|virtual reality|augmented reality|mixed reality|extended reality|xr)\b/i, art: "art-web" },
+    { name: "Climate", pattern: /\b(climate|sustainability|sustainable|clean energy|renewable energy|environment|environmental|conservation|water quality|agriculture)\b/i, art: "art-climate" },
+    { name: "Health", pattern: /\b(health|healthcare|medical|wellness|biotech|biomedical|public health|patient|disease|fitness)\b/i, art: "art-health" },
+    { name: "Gaming", pattern: /\b(gaming|games?|video game|game development|game design|interactive game)\b/i, art: "art-web" },
+    { name: "Social impact", pattern: /\b(social impact|social good|civic|community|communities|accessibility|public service|underserved|nonprofit|justice)\b/i, art: "art-civic" },
+    { name: "Web3", pattern: /\b(web3|blockchain|crypto|decentralized)\b/i, art: "art-web" },
+    { name: "Cybersecurity", pattern: /\b(cybersecurity|cyber security|information security|data protection|privacy|fraud prevention)\b/i, art: "art-web" },
+    { name: "Education", pattern: /\b(education|educational|learning|edtech|classroom|curriculum|literacy|teaching)\b/i, art: "art-web" },
+    { name: "Fintech", pattern: /\b(fintech|finance|financial|payments|banking|insurance)\b/i, art: "art-web" },
+    { name: "Robotics & hardware", pattern: /\b(robotics|robot|hardware|embedded systems|iot|internet of things|sensors?|wearables?|connected devices?)\b/i, art: "art-web" },
+    { name: "Apps & software", pattern: /\b(app development|application development|mobile apps?|software development|web development|app challenge)\b/i, art: "art-web" },
+    { name: "Science & research", pattern: /\b(science|scientific|research|laboratory|laboratories|clinical research)\b/i, art: "art-web" },
+    { name: "Transportation", pattern: /\b(transportation|mobility|vehicles?|transit|automotive|traffic|commuting|railway)\b/i, art: "art-web" },
+    { name: "Productivity & work", pattern: /\b(productivity|workflow|workplace|business process|entrepreneurship)\b/i, art: "art-web" }
   ];
-  const category = categoryRules.filter(([, pattern]) => pattern.test(categorySource)).map(([name]) => name);
+  const category = categoryRules.filter(({ pattern }) => pattern.test(categorySource)).map(({ name }) => name);
   const date = row.event_start ? String(row.event_start).slice(0, 10) : null;
   const format = ({ in_person: "In-person", virtual: "Virtual", hybrid: "Hybrid" })[row.format] || "Not confirmed";
   const location = row.format === "virtual" ? "Online" :
@@ -84,7 +88,6 @@ function mapHackathon(row) {
     /\b(allowed|eligible|open to|accepted)\b/i,
     /\b(not allowed|ineligible|not eligible|cannot participate|not accepted)\b/i
   );
-  const artByCategory = ["art-ai", "art-web", "art-climate", "art-health", "art-web", "art-civic", "art-web", "art-web", "art-web", "art-web", "art-web"];
   const officialWebsite = row.official_website || "";
   const registrationLink = row.registration_link || "";
   return {
@@ -98,7 +101,7 @@ function mapHackathon(row) {
     format,
     cost,
     mark: (category[0] || "H").slice(0, 3).toUpperCase(),
-    art: artByCategory[categoryRules.findIndex(([, pattern]) => pattern.test(categorySource))] || "art-web",
+    art: categoryRules.find(({ pattern }) => pattern.test(categorySource))?.art || "art-web",
     label: row.status || "Hackathon listing",
     beginner: /\b(beginner|first[- ]time|new to hackathons)\b/i.test(`${tracks} ${row.application_requirements || ""}`),
     student,
@@ -385,6 +388,10 @@ $("#more-categories").addEventListener("click", () => {
       ["Education", "✎"],
       ["Fintech", "$"],
       ["Robotics & hardware", "⚙"],
+      ["Apps & software", "⌘"],
+      ["Science & research", "⚗"],
+      ["Transportation", "↗"],
+      ["Productivity & work", "▤"],
       ["Beginner", "✦"]
     ];
     const more = $("#more-categories");
@@ -399,7 +406,7 @@ $("#more-categories").addEventListener("click", () => {
     more.innerHTML = "Fewer topics <span>⌃</span>";
   } else {
     $$(".category-chip").forEach((chip) => {
-      if (["Web3", "Cybersecurity", "Education", "Fintech", "Robotics & hardware", "Beginner"].includes(chip.dataset.category)) chip.remove();
+      if (["Web3", "Cybersecurity", "Education", "Fintech", "Robotics & hardware", "Apps & software", "Science & research", "Transportation", "Productivity & work", "Beginner"].includes(chip.dataset.category)) chip.remove();
     });
     $("#more-categories").innerHTML = "More topics <span>⌄</span>";
   }
@@ -410,13 +417,35 @@ $("#modal-close").addEventListener("click", closeModal);
 $("#event-modal").addEventListener("click", (event) => { if (event.target.id === "event-modal") closeModal(); });
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeModal(); });
 $("#suggest-event").addEventListener("click", () => {
-  $("#modal-content").innerHTML = `<span class="eyebrow">COMMUNITY SUBMISSION</span><h2 class="modal-title" id="modal-title">Suggest an event</h2><p class="modal-organizer">Help builders discover a hackathon. This preview form does not send or publish submissions.</p><form id="suggest-form" class="suggest-form"><label>Event name<input required name="event" placeholder="Name of the hackathon" /></label><label>Official event website<input required type="url" name="website" placeholder="https://" /></label><button class="modal-apply" type="submit">Send suggestion</button><p class="suggest-feedback" id="suggest-feedback" aria-live="polite"></p></form>`;
+  $("#modal-content").innerHTML = `<span class="eyebrow">COMMUNITY SUBMISSION</span><h2 class="modal-title" id="modal-title">Suggest an event</h2><p class="modal-organizer">Suggestions are sent for review and won’t appear in listings automatically.</p><form id="suggest-form" class="suggest-form"><label>Event name<input required maxlength="160" name="event" placeholder="Name of the hackathon" /></label><label>Official event website<input required type="url" maxlength="2048" name="website" placeholder="https://" /></label><button class="modal-apply" type="submit">Send suggestion</button><p class="suggest-feedback" id="suggest-feedback" aria-live="polite"></p></form>`;
   $("#event-modal").classList.add("open");
   $("#event-modal").setAttribute("aria-hidden", "false");
-  $("#suggest-form").addEventListener("submit", (event) => {
+  $("#suggest-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    $("#suggest-feedback").textContent = "Thanks! This preview is not connected to a submission service yet.";
-    event.currentTarget.reset();
+    const form = event.currentTarget;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const feedback = $("#suggest-feedback");
+    const formData = new FormData(form);
+    submitButton.disabled = true;
+    feedback.textContent = "Sending your suggestion…";
+    try {
+      const response = await fetch("/api/suggestions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: formData.get("event"),
+          website: formData.get("website")
+        })
+      });
+      if (!response.ok) throw new Error(`Suggestion API returned HTTP ${response.status}`);
+      feedback.textContent = "Thanks! Your suggestion has been sent for review.";
+      form.reset();
+    } catch (error) {
+      console.error("Could not send event suggestion:", error);
+      feedback.textContent = "Could not send your suggestion. Please try again later.";
+    } finally {
+      submitButton.disabled = false;
+    }
   });
 });
 

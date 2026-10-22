@@ -260,6 +260,56 @@ app.get("/api/hackathons", async (_request, response, next) => {
   }
 });
 
+app.post("/api/suggestions", express.json({ limit: "10kb" }), async (request, response, next) => {
+  const eventName = typeof request.body?.event === "string" ? request.body.event.trim() : "";
+  const website = typeof request.body?.website === "string" ? request.body.website.trim() : "";
+  let parsedWebsite;
+
+  try {
+    parsedWebsite = new URL(website);
+  } catch {
+    return response.status(400).json({ error: "Enter a valid event name and website." });
+  }
+
+  if (!eventName || eventName.length > 160 || website.length > 2048 ||
+      !["http:", "https:"].includes(parsedWebsite.protocol)) {
+    return response.status(400).json({ error: "Enter a valid event name and website." });
+  }
+
+  try {
+    const graphqlEndpoint = process.env.SUPABASE_GRAPHQL_URL;
+    const secretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!graphqlEndpoint || !secretKey) {
+      throw new Error("Set SUPABASE_GRAPHQL_URL and SUPABASE_SECRET_KEY in the gateway environment.");
+    }
+
+    const projectUrl = new URL(graphqlEndpoint);
+    if (projectUrl.protocol !== "https:") {
+      throw new Error("SUPABASE_GRAPHQL_URL must use HTTPS.");
+    }
+
+    const insertResponse = await fetch(`${projectUrl.origin}/rest/v1/event_suggestions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: secretKey,
+        Authorization: `Bearer ${secretKey}`,
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify({ event_name: eventName, website })
+    });
+
+    if (!insertResponse.ok) {
+      throw new Error(`Supabase suggestion insert failed (HTTP ${insertResponse.status}).`);
+    }
+
+    response.status(201).json({ status: "submitted" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.use((error, _request, response, _next) => {
